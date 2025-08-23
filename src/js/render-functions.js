@@ -41,3 +41,13 @@ export function showLoader() {
 export function hideLoader() {
   loader.classList.add('hidden');
 }
+
+function showLoadMoreButton() {
+  document.getElementById('loadMoreBtn').classList.remove('hidden');
+}
+
+function hideLoadMoreButton() {
+  document.getElementById('loadMoreBtn').classList.add('hidden');
+}
+
+export { showLoadMoreButton, hideLoadMoreButton };
