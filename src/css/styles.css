@@ -98,13 +98,18 @@ form button:active {
 /* Галерея */
 .gallery {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* ровно 3 в ряд */
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(300px, 1fr)
+  ); /* адаптивная сетка */
   gap: 20px;
   width: 100%;
   max-width: 1200px;
   list-style: none;
   padding: 0;
   margin: 0 auto;
+  box-sizing: border-box;
+  overflow-x: hidden; /* убираем горизонтальный скролл */
 }
 
 .gallery li {
@@ -123,10 +128,11 @@ form button:active {
 }
 
 /* Фото */
+
 .gallery li img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
+  max-width: 100%; /* не шире родителя */
+  height: 200; /* сохраняем пропорции */
+  object-fit: cover; /* если фиксировать высоту, картинка не искажается */
   display: block;
 }
 
@@ -195,4 +201,8 @@ form button:active {
 /* Управление видимостью */
 .hidden {
   display: none !important;
+}
+html,
+body {
+  overflow-x: hidden;
 }

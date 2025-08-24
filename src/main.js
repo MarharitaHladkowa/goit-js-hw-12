@@ -32,10 +32,12 @@ form.addEventListener('submit', async e => {
   currentQuery = query;
   currentPage = 1;
   clearGallery();
+  hideLoadMoreButton();
   showLoader();
 
   try {
     const data = await getImagesByQuery(query, currentPage, 15);
+
     if (data.hits.length === 0) {
       iziToast.warning({
         title: 'No results',
@@ -47,11 +49,13 @@ form.addEventListener('submit', async e => {
 
     createGallery(data.hits);
 
-    // Показуємо кнопку Load more, якщо є більше зображень
-    if (data.hits.length > 0 && currentPage * 15 < data.totalHits) {
+    if (currentPage * 15 < data.totalHits) {
       showLoadMoreButton();
     } else {
-      hideLoadMoreButton();
+      iziToast.info({
+        title: 'End',
+        message: "You've reached the end of the results.",
+      });
     }
   } catch (err) {
     iziToast.error({
@@ -67,14 +71,17 @@ form.addEventListener('submit', async e => {
 async function loadMoreImages() {
   if (!currentQuery) return;
 
+  hideLoadMoreButton(); // блокуємо повторні кліки
   showLoader();
+
   try {
-    const data = await getImagesByQuery(currentQuery, currentPage + 1, 15);
+    currentPage++; // ✅ інкремент перед запитом
+    const data = await getImagesByQuery(currentQuery, currentPage, 15);
 
     if (data.hits.length === 0) {
-      iziToast.warning({
-        title: 'No more images',
-        message: 'There are no more images to load.',
+      iziToast.info({
+        title: 'End',
+        message: "You've reached the end of the results.",
       });
       hideLoader();
       hideLoadMoreButton();
@@ -82,16 +89,32 @@ async function loadMoreImages() {
     }
 
     createGallery(data.hits);
-    currentPage++;
-    hideLoader();
+
+    // плавний скрол після додавання нових картинок
+    const { height: cardHeight } =
+      gallery.firstElementChild.getBoundingClientRect();
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
+
+    if (currentPage * 15 < data.totalHits) {
+      showLoadMoreButton();
+    } else {
+      iziToast.info({
+        title: 'End',
+        message: "You've reached the end of the results.",
+      });
+      hideLoadMoreButton();
+    }
   } catch (err) {
     iziToast.error({
       title: 'Error',
       message: 'Something went wrong. Try again!',
     });
+  } finally {
     hideLoader();
   }
 }
 
-// Обробник події для кнопки "Load more"
 loadMoreBtn.addEventListener('click', loadMoreImages);
