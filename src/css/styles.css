@@ -131,7 +131,7 @@ form button:active {
 
 .gallery li img {
   max-width: 100%; /* не шире родителя */
-  height: 200; /* сохраняем пропорции */
+  height: 200px; /* сохраняем пропорции */
   object-fit: cover; /* если фиксировать высоту, картинка не искажается */
   display: block;
 }
